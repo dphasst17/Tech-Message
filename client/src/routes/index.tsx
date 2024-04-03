@@ -5,11 +5,11 @@ import Auth from "../pages/auth";
 
 //PublicRoutes
 const publicRoutes:{path:string,component:FC}[] = [
-    { path: "/", component: Home },
     { path: "/auth", component: Auth },
 ];
 
 const privateRoutes:{path:string,component:FC}[] = [
+    { path: "/", component: Home },
 
 ];
 export { publicRoutes, privateRoutes};
