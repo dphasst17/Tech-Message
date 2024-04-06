@@ -9,6 +9,7 @@ import { getChatDetail, sendMessage } from "../../../api/chatApi";
 import { StateContext } from "../../../context/stateContext";
 import { CiSquareInfo,CiSearch,CiPhone  } from "react-icons/ci";
 import { GetToken } from "../../../utils/token";
+import { io } from "socket.io-client";
 const ChatContent = () => {
     const { chatId, user,currentUserChat } = useContext(StateContext)
     const [dataMess, setDataMess] = useState<any[]>([])
@@ -34,7 +35,25 @@ const ChatContent = () => {
     useEffect(() => {
         scrollToBottom();
     }, [dataMess]);
+    useEffect(() => {
+        const socket = io(`${import.meta.env.VITE_REACT_APP_URL}`)
+        socket.on("/message",(data) => {
+            const checkTime = dataMess.filter((f:any) => f.time === data.timestamp)
+            const addNew = [...dataMess,{time:data.timestamp,data:[data]}]
+            const appendData = dataMess.map((d:any) => {
+                return {
+                    ...d,
+                    data: d.time === data.timestamp ? [...d.data,data] : d.data
+                }
+            })
+            chatId === data.idChat && checkTime.length === 0 ? setDataMess(addNew) : setDataMess(appendData)
+            chatId === data.idChat && checkTime.length === 0 ? console.log(addNew) : console.log(appendData)
+        })
+        return () => {
+            socket.close();
+        };
 
+    },[dataMess])
     const send = () => {
         const token = GetToken()
         const date = (new Date().toISOString()).split("T")[0]

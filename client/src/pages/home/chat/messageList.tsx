@@ -28,8 +28,6 @@ const MessageList = () => {
             const getObj = dataChat.filter((f:any) => f.idChat === data.idChat)[0]
             const spliceObj = dataChat.filter((f:any) => f.idChat !== data.idChat)
             const result = [{...getObj,detail:{sender:data.sender,message:data.message,timestamp:data.timestamp,time:data.time}},...spliceObj]
-            console.log(spliceObj)
-            console.log(result)
             dataChat.length !== 0 && setListMess(result)
         })
         // Dọn dẹp khi component unmount
