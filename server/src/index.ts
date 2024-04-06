@@ -16,6 +16,7 @@ const io = new Server(server,{
     methods:["GET","POST"]
   }
 });
+
 const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use((req, res, next) => {
@@ -27,9 +28,10 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,authorization");
     next();
 });
+
 const arrRoute = [
   {path:'chat',isApi:false,routes:ChatRouter(io)},
-  {path:'auth',isApi:false,routes:AuthRouter},
+  {path:'auth',isApi:false,routes:AuthRouter(io)},
   {path:'noti',isApi:false,routes:NotiRouter},
   {path:'user',isApi:false,routes:UserRouter(io)},
 ]
@@ -38,6 +40,14 @@ db.connectDB()
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+io.on('connection', (socket) => {
+  socket.on('user_disconnect',data => {
+    io.emit('offline',data);
+  })
+});
+
+
 server.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
 });

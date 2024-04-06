@@ -18,7 +18,7 @@ export default class Users {
         if (result.length === 0) {
           return NewResponse.responseMessage(res, 401, "User doesn't exit");
         }
-
+        this.io.emit('online',idUser)
         NewResponse.responseData(res, 200, result);
       })
       .catch((err) =>
