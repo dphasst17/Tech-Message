@@ -45,7 +45,7 @@ export default class Chat {
       const chatDetail = await collectionChat
         .aggregate([
           { $match: { idChat: { $in: getIdChat } } },
-          { $sort: { time: -1 } },
+          { $sort: { timestamp:-1, time: -1 } },
           { $group: { _id: "$idChat", message: { $first: "$$ROOT" } } },
           { $replaceRoot: { newRoot: "$message" } },
         ])
@@ -103,7 +103,7 @@ export default class Chat {
         collectionChat
           .find({ idChat: idChat })
           .project({ status: 0 })
-          .sort({ time: 1 })
+          .sort({timestamp:1,time: 1 })
           .limit(10)
           .toArray(),
       ]);
