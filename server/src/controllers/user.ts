@@ -1,25 +1,27 @@
 import { collectionFriend, collectionInfo, collectionNotification } from "./../models/collection";
 import { Request, Response } from "express";
-import { RequestCustom } from "./auth";
 import * as NewResponse from "../utils/response";
 import { Server } from "socket.io";
+import { socketNoti, socketUserStatus } from "../utils/socket";
+import { RequestCustom } from "../utils/interface";
 export default class Users {
   private io: Server;
 
   constructor(io: Server) {
     this.io = io;
   }
-  public getUser = async (req: RequestCustom, res: Response) => {
+  public getUser = async (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser;
+    const update = {$set:{online:true}}
     collectionInfo
-      .find({ idUser: idUser })
-      .toArray()
+      .findOneAndUpdate({ idUser: idUser },update,{returnDocument:"after"})
       .then((result) => {
-        if (result.length === 0) {
+        if (!result) {
           return NewResponse.responseMessage(res, 401, "User doesn't exit");
         }
-        this.io.emit('online',idUser)
-        NewResponse.responseData(res, 200, result);
+        socketUserStatus(this.io,'online',idUser)
+        NewResponse.responseData(res, 200, [result]);
       })
       .catch((err) =>
         NewResponse.responseMessage(
@@ -29,7 +31,8 @@ export default class Users {
         )
       );
   };
-  public searchUserDetail = async (req: RequestCustom, res: Response) => {
+  public searchUserDetail = async (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser;
     const data = req.body;
     try {
@@ -180,7 +183,34 @@ export default class Users {
         )
       );
   };
-  public addFriend = async (req: RequestCustom, res: Response) => {
+  public getFriendByUser = async(request: Request,res: Response) => {
+    const req = request as RequestCustom
+    const idUser = req.idUser
+    try{
+      const getFriend = await collectionFriend.find({$or:[{userId:idUser},{friendId:idUser}],status:'friends'}).toArray()
+      const arrUserId = getFriend.map((e:any) => e.userId)
+      const arrFriendId = getFriend.map((e:any) => e.friendId)
+      const result = [...arrUserId,...arrFriendId].filter((f:string) => f !== idUser)
+      const friendInfo = await collectionInfo.find({idUser:{$in:result}}).project({idUser:1,name:1,avatar:1,online:1,_id:0}).toArray()
+      const appendData = friendInfo.map((f:any) => {
+        const filter = getFriend.filter((data:any) => data.userId === f.idUser || data.friendId === f.idUser)[0]
+        return {
+          ...f,
+          idFriend:filter.id,
+          status:filter.status
+        }
+
+      })
+      NewResponse.responseData(res,200,appendData)
+    }
+    catch{
+      (err:any) =>{
+        NewResponse.responseMessage(res,500,"A server error occurred. Please try again in 5 minutes.")
+      }
+    }
+  }
+  public addFriend = async (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser;
     const data = req.body;
     const result = {
@@ -205,15 +235,16 @@ export default class Users {
           name: info[0].name,
         })
         .then(n => {
-          this.io.emit("friend", {
+          const dataEmit = {
             idNoti:`noti-${idUser}-${data.friendId}`,
             from: idUser,
             to: data.friendId,
             avatar: info[0].avatar,
             createdAt: new Date().toISOString().split("T")[0].split("-").reverse().join("/"),
             name: info[0].name,
-          });
-          NewResponse.responseMessage(res, 201, "Add friend is success");
+          }
+          socketNoti(this.io,dataEmit)
+          NewResponse.responseMessage(res, 201, "Invitation sent successfully");
         })
         .catch((err) => NewResponse.responseMessage(res, 500, "Internal Server Error"))
     }
@@ -221,8 +252,8 @@ export default class Users {
       NewResponse.responseMessage(res, 500, "Internal Server Error");
     }
   };
-  //idUser,id,idNoti
-  public changeFriendField = (req: RequestCustom, res: Response) => {
+  public changeFriendField = (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser
     const data = req.body
     collectionFriend.find({friendId:idUser,id:data.id}).toArray()

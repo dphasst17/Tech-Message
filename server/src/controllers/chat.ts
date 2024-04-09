@@ -4,29 +4,18 @@ import {
   collectionInfo,
 } from "./../models/collection";
 import { Request, Response } from "express";
-import { RequestCustom } from "./auth";
 import * as NewResponse from "../utils/response";
 import { Server } from "socket.io";
-interface chatInfo {
-  idChat: string;
-  listUser: string[];
-  typeChat: string;
-}
-interface ChatType {
-  idChat: string;
-  sender: string;
-  message: string;
-  timestamp: string;
-  time: string;
-  status: string;
-}
+import { socketMessage } from "../utils/socket";
+import { chatInfo, ChatType, RequestCustom } from "../utils/interface";
 export default class Chat {
   private io: Server;
 
   constructor(io: Server) {
     this.io = io;
   }
-  public getChatByUser = async (req: RequestCustom, res: Response) => {
+  public getChatByUser = async (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser;
     try {
       const getChat = await collectionChatInfo
@@ -40,7 +29,7 @@ export default class Chat {
       const getIdChat = getChat.map((e) => e.idChat);
       const infoUser = await collectionInfo
         .find({ idUser: { $in: getIdUser } })
-        .project({ _id: 0, name: 1, avatar: 1, idUser: 1 })
+        .project({ _id: 0, name: 1, avatar: 1, idUser: 1, online:1})
         .toArray();
       const chatDetail = await collectionChat
         .aggregate([
@@ -104,7 +93,6 @@ export default class Chat {
           .find({ idChat: idChat })
           .project({ status: 0 })
           .sort({timestamp:1,time: 1 })
-          .limit(10)
           .toArray(),
       ]);
       NewResponse.responseData(res, 200, getChat);
@@ -117,9 +105,11 @@ export default class Chat {
         );
     }
   };
-  public sendMessage = (req: RequestCustom, res: Response) => {
+  public sendMessage = async (request: Request, res: Response) => {
+    const req = request as RequestCustom
     const idUser = req.idUser;
     const data = req.body;
+    const listUserSplit = data.id.split("-");
     const resultData: ChatType = {
       idChat: data.id,
       sender: idUser,
@@ -128,13 +118,30 @@ export default class Chat {
       time: data.time,
       status: "sent",
     };
+    const chatInfo = {
+      idChat: data.id,
+      listUser: [listUserSplit[1], listUserSplit[2]],
+      typeChat: "individual",
+      timestampUpdate:data.timestamp,
+      timeUpdate:data.time
+    };
     const options = { returnOriginal: false, includeResultMetadata: false };
-    collectionChatInfo.findOneAndUpdate({idChat:data.id},{$set:{timestampUpdate:data.timestamp,timeUpdate:data.time}},options)
+    const findChatInfo = await collectionChatInfo.find({ listUser: {$all:[listUserSplit[1], listUserSplit[2]] , $size:2} }).toArray()
+    if(findChatInfo.length === 0){
+      collectionChatInfo.insertOne(chatInfo)
+    }else{
+      collectionChatInfo.findOneAndUpdate(
+        { listUser: {$all:[listUserSplit[1], listUserSplit[2]] , $size:2} },
+        {$set:{timestampUpdate:data.timestamp,timeUpdate:data.time}},
+        options
+      )
+    }
     collectionChat
       .insertOne(resultData)
       .then((result) => {
         if (result.acknowledged && result.insertedId) {
-          this.io.emit("/message", resultData);
+          socketMessage(this.io,resultData)
+          /* this.io.emit("/message", resultData); */
           NewResponse.responseDataMessage(
             res,
             201,
@@ -142,7 +149,7 @@ export default class Chat {
             "Sent message is success"
           );
         } else {
-          NewResponse.responseMessage(res, 422, "Create ticket is failure");
+          NewResponse.responseMessage(res, 422, "Send message is failure");
         }
       })
       .catch((err) =>

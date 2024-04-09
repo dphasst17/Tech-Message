@@ -8,6 +8,6 @@ export default (io: Server) => {
     const Middle = new MiddleWare()
     router.post('/register',AuthController.register)
     router.post('/login',AuthController.login)
-    router.patch('/password/update',Middle.verify as any,AuthController.updatePassword as any)
+    router.patch('/password/update',Middle.verify,AuthController.updatePassword)
     return router
 }

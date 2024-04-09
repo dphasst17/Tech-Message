@@ -4,16 +4,8 @@ import jwt from "jsonwebtoken";
 import * as NewResponse from "../utils/response";
 import bcrypt from "bcrypt";
 import { Server } from "socket.io";
-interface AuthReq {
-  username: string;
-  password: string;
-}
-interface JwtPayloadCustom extends jwt.JwtPayload {
-  exp: number;
-}
-export interface RequestCustom extends Request {
-  idUser: string;
-}
+import { AuthReq, JwtPayloadCustom, RequestCustom } from "../utils/interface";
+
 export default class Auth {
   private io: Server;
 
@@ -107,7 +99,8 @@ export default class Auth {
       );
     }
   };
-  public updatePassword = async (req: RequestCustom, res: Response) => {
+  public updatePassword = async (request: Request, res: Response) => {
+    const req = request as RequestCustom 
     const idUser = req.idUser;
     const data = req.body;
     const getPass = await collectionAuth

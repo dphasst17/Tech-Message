@@ -7,11 +7,12 @@ export default(io:Server) => {
     const Middle = new MiddleWare()
     const UserController = new User(io);
 
-    router.post('/',Middle.verify as any,UserController.getUser as any)
-    router.patch('/update',Middle.verify as any,UserController.updateUser)
-    router.post('/search',Middle.verify as any, UserController.searchUserDetail as any)
+    router.post('/',Middle.verify,UserController.getUser)
+    router.patch('/update',Middle.verify,UserController.updateUser)
+    router.post('/search',Middle.verify, UserController.searchUserDetail)
     router.get('/search/:key',UserController.searchUser)
-    router.post('/friend',Middle.verify as any,UserController.addFriend as any)
-    router.patch('/friend',Middle.verify as any,UserController.changeFriendField as any)
+    router.get('/friend',Middle.verify, UserController.getFriendByUser)
+    router.post('/friend',Middle.verify,UserController.addFriend)
+    router.patch('/friend',Middle.verify,UserController.changeFriendField)
     return router
 }

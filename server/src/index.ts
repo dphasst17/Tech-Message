@@ -7,6 +7,8 @@ import AuthRouter from "./routes/auth";
 import ChatRouter from "./routes/chat";
 import UserRouter from "./routes/user";
 import NotiRouter from "./routes/notification"
+import {collectionInfo } from "./models/collection";
+import { socketUserStatus } from "./utils/socket";
 dotenv.config();
 const app = express();
 const server = createServer(app);
@@ -36,14 +38,16 @@ const arrRoute = [
   {path:'user',isApi:false,routes:UserRouter(io)},
 ]
 arrRoute.map(r => app.use((r.isApi === true ? `/api/${r.path}`: `/${r.path}`),r.routes))
-db.connectDB()
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+db.connectDB()
+
 io.on('connection', (socket) => {
   socket.on('user_disconnect',data => {
-    io.emit('offline',data);
+    collectionInfo.findOneAndUpdate({idUser:data},{$set:{online:false}})
+    socketUserStatus(io,'offline',data)
   })
 });
 
