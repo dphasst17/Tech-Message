@@ -15,3 +15,6 @@ export const SaveToken = (token: string, exp: number) => {
         path: "/",
     })
 }
+export const RemoveToken = () => {
+    return Cookies.remove('tk',{path:'/'})
+}
