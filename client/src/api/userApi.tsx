@@ -8,13 +8,22 @@ export const getUser = async(token:string) => {
     }).then(res => res.json())
 }
 export const updateUser = async(token:string,data:{name:string,email:string}) => {
-    return fetch(`${import.meta.env.VITE_REACT_APP_URL}/user`,{
-        method:'POST',
+    return fetch(`${import.meta.env.VITE_REACT_APP_URL}/user/update`,{
+        method:'PATCH',
         headers:{
             'Content-Type':'application/json',
             'Authorization' : `Bearer ${token}`
         },
         body:JSON.stringify(data)
+    }).then(res => res.json())
+}
+export const getFriendByUser = async(token:string) => {
+    return fetch(`${import.meta.env.VITE_REACT_APP_URL}/user/friend`,{
+        method:'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${token}`
+        }
     }).then(res => res.json())
 }
 export const addFriend = async(token:string,data:{friendId:string}) => {
