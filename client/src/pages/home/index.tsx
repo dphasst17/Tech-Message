@@ -1,8 +1,8 @@
-import ChatContent from './chat/content'
-import ChatNav from './chat/nav'
+import ChatContent from './chat/chatContent'
+import ChatNav from './chat/chatNav'
 
 const Home = () => {
-  return <div className='w-full h-full flex justify-around'>
+  return <div className='w-full h-full flex flex-wrap md:flex-nowrap md:justify-around'>
     <ChatNav/>
     <ChatContent/>
   </div>

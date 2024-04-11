@@ -5,9 +5,10 @@ import { StateContext } from "../../../context/stateContext";
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import { GetToken } from "../../../utils/token";
 import { changeFriendInvitations } from "../../../api/userApi";
+import { socketFriendNoti } from "../../../interface/socket";
 import { io } from "socket.io-client";
 const BadgeNav = () => {
-    const { user, noti, setNoti } = useContext(StateContext)
+    const {user, noti, setFriend, setNoti } = useContext(StateContext)
     const [isNew, setIsNew] = useState(false)
     useEffect(() => {
         const socket = io(`${import.meta.env.VITE_REACT_APP_URL}`)
@@ -17,26 +18,20 @@ const BadgeNav = () => {
         window.addEventListener('beforeunload', () => {
             socket.emit('user_disconnect',user[0].idUser)
         });
-        /* socket.emit('user_disconnect',user[0].idUser) */
-        socket?.on('friend', (friend: any) => {
+        socket?.on('friend', (friend: socketFriendNoti) => {
             if (friend.to === user[0].idUser) {
                 setIsNew(true)
                 setNoti([...noti, friend])
             }
         });
-        socket.on('offline',(data:string) => {
-           console.log('User offline',data)     
-        })
-        socket.on('online',(data:string) => {
-            console.log('User online',data)
-        })
         // Dọn dẹp khi component unmount
         return () => {
+            socket.off('connect')
             socket.off('friend');
             socket.close();
         };
     }, []);
-    const handleChangeFriendInvitations = (idNoti: string, type: string) => {
+    const handleChangeFriendInvitations = (idNoti: string, type: string,name?:string,avatar?:string) => {
         const token = GetToken()
         const arrSplit = idNoti.split("-")
         const id = `${arrSplit[1]}-${arrSplit[2]}`
@@ -44,15 +39,20 @@ const BadgeNav = () => {
             .then((res: any) => {
                 if (res.status === 200) {
                     setNoti(noti.filter((f: any) => f.idNoti !== idNoti))
+                    if(type === 'confirm'){
+                        const split = idNoti.split("-")
+                        setFriend((prevFriends:any) => [...prevFriends,{idFriend:`${split[1]}-${split[2]}`,name:name,avatar:avatar,online:false} ]);
+                    }
                 }
                 alert(res.message)
             })
 
     }
+    
     return <Popover placement="bottom-end" radius="sm" size="lg" className="w-[250px] sm:w-[300px]" showArrow={true}>
-        <Badge content="" shape="rectangle" size="md" color={isNew ? "danger" : "primary"} placement="top-right">
+        <Badge content="" shape="rectangle" size="md" color={isNew ? "danger" : "primary"} placement="top-right" className="mx-auto">
             <PopoverTrigger>
-                <Button isIconOnly className="ml-4" onClick={() => { setIsNew(false) }}><IoPersonAddOutline className="text-[20px] font-bold" /></Button>
+                <Button isIconOnly className="mx-1" onClick={() => { setIsNew(false) }}><IoPersonAddOutline className="text-[20px] font-bold" /></Button>
             </PopoverTrigger>
         </Badge>
         <PopoverContent>
@@ -63,7 +63,7 @@ const BadgeNav = () => {
                         <Avatar src={n.avatar} className="m-1" radius="sm" />
                         <span className="text-ellipsis w-4/5 text-[18px] mr-2">{n.name} sent you a friend request</span>
                         <Button isIconOnly color="success" radius="sm" className="m-1 text-white text-[20px] font-bold"
-                            onClick={() => { handleChangeFriendInvitations(n.idNoti, 'confirm') }}
+                            onClick={() => { handleChangeFriendInvitations(n.idNoti, 'confirm',n.name,n.avatar) }}
                         >
                             <AiOutlineDown />
                         </Button>
