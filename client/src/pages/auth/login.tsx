@@ -6,6 +6,8 @@ import { setLocalStorage } from "../../utils/localStorage"
 import { useNavigate } from "react-router-dom"
 import { SaveToken } from "../../utils/token"
 import { StateContext } from "../../context/stateContext"
+import EyeSlashFilledIcon from "../../components/icon/eyeSlashFilledIcon"
+import EyeFilledIcon from "../../components/icon/eyeFilledIcon"
 interface FormValue {
   username:string,
   password:string
@@ -39,7 +41,9 @@ const Login =() => {
       />
     </form>
     <div className="w-1/4 h-[50px] flex justify-end items-center">
-      <Button onClick={() => {setIsPassword(!isPassword)}} className="w-[100px] h-2/4 text-center cursor-pointer transition-all" radius="sm">{isPassword?'SHOW':'HIDE'}</Button>
+      <Button isIconOnly onClick={() => {setIsPassword(!isPassword)}} className="text-center cursor-pointer transition-all" radius="sm">
+        {isPassword?<EyeFilledIcon className="text-[25px]"/>:<EyeSlashFilledIcon className="text-[25px]"/>}
+      </Button>
     </div>
     <Button onClick={() => {handleSubmit(onSubmit)()}} className="w-[150px] text-white font-bold uppercase" radius="sm" color="success">Login</Button>
   </>

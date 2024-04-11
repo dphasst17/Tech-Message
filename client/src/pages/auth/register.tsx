@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form"
 import { authRegister } from "../../api/authApi"
 import { setLocalStorage } from "../../utils/localStorage"
 import Cookies from "js-cookie"
+import EyeFilledIcon from "../../components/icon/eyeFilledIcon"
+import EyeSlashFilledIcon from "../../components/icon/eyeSlashFilledIcon"
 
 interface FormValue {
   username: string,
@@ -44,8 +46,8 @@ const Register = () => {
   return <>
     <form className="w-1/4">
       <Input {...register('username', { required: true })} type="text" label="Username" radius="sm" color="default" variant="bordered" className="my-2" />
-      <Input {...register('password', { required: true })} type={isPassword ? 'password' : 'text'} label="Password" radius="sm" color="default" variant="bordered" className="my-2" />
-      <Input {...register('confirm', { required: true })} type={isPassword ? 'password' : 'text'} label="Confirm password" radius="sm" color="default" variant="bordered" className="my-2" />
+      <Input {...register('password', { required: true,minLength:4 })} type={isPassword ? 'password' : 'text'} label="Password" radius="sm" color="default" variant="bordered" className="my-2" />
+      <Input {...register('confirm', { required: true,minLength:4 })} type={isPassword ? 'password' : 'text'} label="Confirm password" radius="sm" color="default" variant="bordered" className="my-2" />
       <Input {...register('name', { required: true })} type="text" label="Full name" radius="sm" color="default" variant="bordered" className="my-2" />
       <Input {...register('email', {
         required: true, pattern: {
@@ -59,7 +61,9 @@ const Register = () => {
       </Tooltip>}
     </form>
     <div className="w-1/4 h-[50px] flex justify-end items-center">
-      <Button onClick={() => { setIsPassword(!isPassword) }} className="w-[100px] h-2/4 text-center cursor-pointer transition-all" radius="sm">{isPassword ? 'SHOW' : 'HIDE'}</Button>
+      <Button isIconOnly onClick={() => { setIsPassword(!isPassword) }} className="text-center cursor-pointer transition-all" radius="sm">
+      {isPassword?<EyeFilledIcon className="text-[25px]"/>:<EyeSlashFilledIcon className="text-[25px]"/>}
+      </Button>
     </div>
     <Button onClick={() => { handleSubmit(onSubmit)() }} className="w-[150px] text-white font-bold uppercase" radius="sm" color="success">Login</Button>
   </>
