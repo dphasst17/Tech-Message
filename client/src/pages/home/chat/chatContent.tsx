@@ -5,7 +5,7 @@ import { MdOutlineInsertEmoticon } from "react-icons/md";
 import { FaFileMedical } from "react-icons/fa";
 import { IoImages } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
-import { RxOpenInNewWindow } from "react-icons/rx";
+/* import { RxOpenInNewWindow } from "react-icons/rx"; */
 import { getChatDetail, sendMessage } from "../../../api/chatApi";
 import { StateContext } from "../../../context/stateContext";
 import { CiSquareInfo, CiSearch, CiPhone } from "react-icons/ci";
@@ -104,8 +104,8 @@ const ChatContent = () => {
         setInputValue(e.target.value)
     }
     return <>
-        <Button className="md:hidden m-1" radius="sm" color="primary" isIconOnly onClick={toggleNav}>
-            <RxOpenInNewWindow className="text-[25px]" />
+        <Button className="md:hidden m-1" radius="sm" isIconOnly onClick={toggleNav}>
+            <Avatar src={user[0]?.avatar} radius="sm"/>
         </Button>
         <div className="chatContent w-full md:w-[70%] h-[93%] md:h-full flex flex-wrap justify-center content-around bg-zinc-800 border border-solid border-zinc-400 rounded-lg p-1">
             {chatId !== "" && <div className="w-full h-[8%] flex items-center p-1 ">

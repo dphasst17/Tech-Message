@@ -73,8 +73,8 @@ const MessageList = () => {
 
             }
         })
-        socket.on('group/message',() => {})
         socket.on("/message", (data: socketMessage) => {
+            console.log(data)
             if (data) {
                 const splitData = data.idChat.split("-")
                 const getUser = [splitData[1], splitData[2]].filter((f: string) => f !== user[0].idUser)[0]
@@ -104,8 +104,10 @@ const MessageList = () => {
                     ...spliceObj
                 ]
                 getObj.length === 0 && getDataUser[0]?.online === true && setUserOnline([...userOnline, getDataUser[0]?.idUser])
+                console.log(getObj)
                 const result = getObj.length !== 0  ? appendData : addNewData
-                dataChat.length !== 0 && (splitData[1] === user[0].idUser || splitData[2] === user[0].idUser) && setListMess(result)
+                console.log(dataChat.includes(data.idChat))
+                dataChat.length !== 0 && ((splitData[1] === user[0].idUser || splitData[2] === user[0].idUser) || dataChat.map((d:any) => d.idChat).includes(data.idChat)) && setListMess(result)
             }
         })
         // Dọn dẹp khi component unmount
