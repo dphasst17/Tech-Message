@@ -22,16 +22,17 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
               if (friendRes.status === 200) {
                 setFriend(friendRes.data);
               }
+              
+              const chatRes = await getChatByUser(token);
+              if (chatRes.status === 200) {
+                setDataChat(chatRes.data);
+              }
       
               const notiRes = await getNotiByUser(token);
               if (notiRes.status === 200) {
                 setNoti(notiRes.data);
               }
       
-              const chatRes = await getChatByUser(token);
-              if (chatRes.status === 200) {
-                setDataChat(chatRes.data);
-              }
             } catch (error) {
               console.error('Error fetching data:', error);
             }

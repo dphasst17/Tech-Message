@@ -90,6 +90,8 @@ const ChatContent = () => {
             message: inputValue,
             time: time,
             timestamp: date,
+            name:user[0]?.name,
+            avatar:user[0]?.avatar
         })
             .then(res => {
                 if (res.status === 201) {
@@ -121,7 +123,7 @@ const ChatContent = () => {
                     {d.data.map((e: any) => <>
                         <MessageUi className="w-auto h-auto overflow-hidden my-4 flex items-center"
                             color={e.sender === user[0].idUser ? 'primary' : 'danger'} isTruncate={true} reverse={e.sender === user[0].idUser ? true : false}
-                            src={e.sender === user[0].idUser ? user[0].avatar : currentUserChat.avatar} content={e.message} height="auto" width="auto" />
+                            src={e.sender === user[0].idUser ? user[0].avatar : (e.avatar||currentUserChat.avatar)} content={e.message} height="auto" width="auto" />
                     </>)}
                 </>)}
                 <div ref={messagesEndRef} />

@@ -8,6 +8,7 @@ import { searchUser } from "../../../api/userApi"
 import { CiSearch } from "react-icons/ci";
 import { CgUserList } from "react-icons/cg";
 import { FaRegWindowClose } from "react-icons/fa";
+import { TbMessages } from "react-icons/tb";
 import Result from "./searchResult"
 import ModalSearch from "../modal/search"
 import BadgeNav from "./badget"
@@ -17,6 +18,7 @@ import BtnNavIcon from "./btnNavIcon"
 import ModalEdit from "../modal/edit"
 import { RemoveToken } from "../../../utils/token"
 import { io } from "socket.io-client"
+import ModalMessage from "../modal/message"
 const ChatNav = () => {
     const navigate = useNavigate();
     const { nav,user, isLogin, setIsLogin,toggleNav } = useContext(StateContext)
@@ -81,6 +83,7 @@ const ChatNav = () => {
                     <BadgeNav />
                     <BtnNavIcon onOpen={onOpen} setModalName={setModalName} name="friend" icon={CgUserList}/>
                     <BtnNavIcon onOpen={onOpen} setModalName={setModalName} name="edit" icon={FaUserEdit}/>
+                    <BtnNavIcon onOpen={onOpen} setModalName={setModalName} name="message" icon={TbMessages}/>
                     <Button radius="sm" className="font-bold" color="danger" onClick={handleLogOut}>{isLogin ? 'LOGOUT' : 'LOGIN'}</Button>
                 </div>
             </div>)}
@@ -89,6 +92,7 @@ const ChatNav = () => {
         {modalName === "search" && <ModalSearch value={searchValue} isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName} />}
         {modalName === "friend" && <ModalFriend isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
         {modalName === "edit" && <ModalEdit isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
+        {modalName === "message" && <ModalMessage isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
     </>
 }
 
