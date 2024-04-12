@@ -7,3 +7,6 @@ export const socketMessage = (io:any,data:any) => {
 export const socketNoti = (io:any,data:any) => {
     return io.emit('friend',data)
 }
+export const socketCreateGroup = (io:any,data:any) => {
+    return io.emit('group/create',data)
+}

@@ -137,7 +137,7 @@ export default class Users {
 
   public searchUser = (req: Request, res: Response) => {
     const value = req.params["key"];
-    const result = collectionInfo
+    collectionInfo
       .find({ name: new RegExp(value, "i") })
       .project({
         _id: 0,
