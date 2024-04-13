@@ -55,7 +55,7 @@ export default class Chat {
         return NewResponse.responseMessage(res, 401, "Creating groups failed");
       }
       const dataCreateGroup = {
-        listUser:data.listUser,
+        listUser: data.listUser,
         idChat: data.idChat,
         typeChat: "group",
         userData: {
@@ -95,14 +95,17 @@ export default class Chat {
       const getIdUser = getChat.map(
         (e) => e.listUser.filter((f: string) => f !== idUser)[0]
       );
-      const getGroupId = getChat.filter(e => e.typeChat === "group")[0]?.idChat
+      const getGroupId = getChat.filter((e) => e.typeChat === "group")[0]
+        ?.idChat;
 
       const getIdChat = getChat.map((e) => e.idChat);
       const infoUser = await collectionInfo
         .find({ idUser: { $in: getIdUser } })
         .project({ _id: 0, name: 1, avatar: 1, idUser: 1, online: 1 })
         .toArray();
-      const infoGroup = getGroupId && await collectionGroupInfo.find({idGroup:getGroupId}).toArray()
+      const infoGroup =
+        getGroupId &&
+        (await collectionGroupInfo.find({ idGroup: getGroupId }).toArray());
 
       const chatDetail = await collectionChat
         .aggregate([
@@ -117,14 +120,17 @@ export default class Chat {
         return {
           idChat: e.idChat,
           typeChat: e.typeChat,
-          userData:e.typeChat !== "group" 
-          ? infoUser.filter((f) => e.listUser.includes(f.idUser))[0]
-          : infoGroup.filter((f:any) => f.idGroup === e.idChat).map((i:any) => ({
-            idUser:i.idGroup,
-            name:i.nameGroup,
-            avatar:i.avatarGroup,
-            online:false
-          }))[0],
+          userData:
+            e.typeChat !== "group"
+              ? infoUser.filter((f) => e.listUser.includes(f.idUser))[0]
+              : infoGroup
+                  .filter((f: any) => f.idGroup === e.idChat)
+                  .map((i: any) => ({
+                    idUser: i.idGroup,
+                    name: i.nameGroup,
+                    avatar: i.avatarGroup,
+                    online: false,
+                  }))[0],
           detail: chatDetail
             .filter((f) => e.idChat === f.idChat)
             .flatMap((c) => {
@@ -157,10 +163,17 @@ export default class Chat {
     };
     try {
       const insertChat = await collectionChatInfo.findOneAndUpdate(
-        {$or:[
-          { listUser: { $all: [listUserSplit[1], listUserSplit[2]], $size: 2 } },
-          {idChat:idChat}
-        ]},
+        {
+          $or: [
+            {
+              listUser: {
+                $all: [listUserSplit[1], listUserSplit[2]],
+                $size: 2,
+              },
+            },
+            { idChat: idChat },
+          ],
+        },
         { $setOnInsert: chatInfo },
         { upsert: true }
       );
@@ -172,38 +185,92 @@ export default class Chat {
           { idChat: idChat, status: "sent" },
           { $set: { status: "received" } }
         ),
-        insertChat.typeChat === "group" ?
-        collectionChat.aggregate([
-          { $match: { idChat: idChat } },
-          {
-            $lookup: {
-              from: "info",
-              localField: "sender",
-              foreignField: "idUser",
-              as: "userInfo"
-            }
-          }
-
-        ]).toArray()
-        :collectionChat
-        .find({ idChat: idChat })
-        .project({ status: 0 })
-        .sort({ timestamp: 1, time: 1 })
-        .toArray()
-        
+        insertChat.typeChat === "group"
+          ? collectionChat
+              .aggregate([
+                { $match: { idChat: idChat } },
+                {
+                  $lookup: {
+                    from: "info",
+                    localField: "sender",
+                    foreignField: "idUser",
+                    as: "userInfo",
+                  },
+                },
+              ])
+              .toArray()
+          : collectionChat
+              .find({ idChat: idChat })
+              .project({ status: 0 })
+              .sort({ timestamp: 1, time: 1 })
+              .toArray(),
       ]);
-      const result = insertChat.typeChat !== "group" 
-      ? getChat
-      : getChat.map(e => {
-        let copy = {...e};
-        copy.avatar = copy.userInfo[0].avatar
-        copy.name = copy.userInfo[0].name
-        delete copy.userInfo; 
-        return copy
-      })
+      const result =
+        insertChat.typeChat !== "group"
+          ? getChat
+          : getChat.map((e) => {
+              let copy = { ...e };
+              copy.avatar = copy.userInfo[0].avatar;
+              copy.name = copy.userInfo[0].name;
+              delete copy.userInfo;
+              return copy;
+            });
       NewResponse.responseData(res, 200, result);
     } catch {
       (error: any) =>
+        NewResponse.responseMessage(
+          res,
+          500,
+          "A server error occurred. Please try again in 5 minutes."
+        );
+    }
+  };
+  public getInfoGroupChat = async (req: Request, res: Response) => {
+    const idChat = req.params["idChat"];
+    try {
+      const data = await collectionChatInfo
+        .find({ idChat: idChat, typeChat: "group" })
+        .toArray();
+      const listUser = data.flatMap((d: any) => d.listUser);
+      const infoUser = await collectionInfo
+        .find({ idUser: { $in: listUser } })
+        .project({ idUser: 1, name: 1, avatar: 1, online: 1 ,_id:0})
+        .toArray();
+      const resultData = data.map((d: any) => ({
+        ...d,
+        listUser: d.listUser.map(
+          (u: string) => infoUser.filter((i: any) => i.idUser === u)[0]
+        ),
+      }));
+      NewResponse.responseData(res, 200, resultData);
+    } catch {
+      (error: any) =>
+        NewResponse.responseMessage(
+          res,
+          500,
+          "A server error occurred. Please try again in 5 minutes."
+        );
+    }
+  };
+  public changeMemberInGroup = async (req: Request, res: Response) => {
+    const data = req.body;
+    const findData:{idChat:string,typeChat:string,listUser?:any} = 
+    { idChat: data.idChat, typeChat: "group",listUser:{[data.type === "add"? '$nin' : '$in']:[data.idUser]} };
+
+    const update = {
+      [data.type === "add" ? "$push" : "$pull"]: { listUser: data.idUser },
+    };
+    try {
+      const updateData = await collectionChatInfo.findOneAndUpdate(
+        findData,
+        update
+      );
+      if (!updateData) {
+        return NewResponse.responseMessage(res,401,"There was an error during execution, please try again later.");
+      }
+      NewResponse.responseMessage(res,200,`${data.type.charAt(0).toUpperCase() + data.type.slice(1)} member is success`)
+    } catch {
+      (err: any) =>
         NewResponse.responseMessage(
           res,
           500,
@@ -233,7 +300,12 @@ export default class Chat {
     };
     const findChatInfo = await collectionChatInfo
       .find({
-        $or:[{listUser: { $all: [listUserSplit[1], listUserSplit[2]], $size: 2 }},{idChat:data.id}]
+        $or: [
+          {
+            listUser: { $all: [listUserSplit[1], listUserSplit[2]], $size: 2 },
+          },
+          { idChat: data.id },
+        ],
       })
       .toArray();
     if (findChatInfo.length === 0) {
@@ -243,10 +315,9 @@ export default class Chat {
       .insertOne(resultData)
       .then((result) => {
         if (result.acknowledged && result.insertedId) {
-          if(listUserSplit[1] === "group"){
-            resultData.avatar = data.avatar
-            resultData.name = data.name
-            
+          if (listUserSplit[1] === "group") {
+            resultData.avatar = data.avatar;
+            resultData.name = data.name;
           }
           socketMessage(this.io, resultData);
           NewResponse.responseDataMessage(

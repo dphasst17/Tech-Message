@@ -9,6 +9,8 @@ export default (io: Server) => {
     router.post('/',Middle.verify,ChatController.getChatByUser)
     router.post('/group',Middle.verify,ChatController.createGroupMessage)
     router.get('/detail/:idChat',ChatController.getChatDetail)
+    router.get('/info/:idChat',ChatController.getInfoGroupChat)
+    router.patch('/member',ChatController.changeMemberInGroup)
     router.put('/send',Middle.verify,ChatController.sendMessage)
     return router;
 };
