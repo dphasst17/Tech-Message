@@ -1,4 +1,4 @@
-import { GroupChat } from "../interface/chat"
+import { GroupChat } from "../interface"
 
 export const getChatByUser = async(token:string) => {
     return fetch(`${import.meta.env.VITE_REACT_APP_URL}/chat`,{

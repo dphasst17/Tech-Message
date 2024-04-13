@@ -6,18 +6,12 @@ import { setLocalStorage } from "../../utils/localStorage"
 import Cookies from "js-cookie"
 import EyeFilledIcon from "../../components/icon/eyeFilledIcon"
 import EyeSlashFilledIcon from "../../components/icon/eyeSlashFilledIcon"
+import { Auth } from "../../interface"
 
-interface FormValue {
-  username: string,
-  password: string,
-  confirm: string,
-  name: string,
-  email: string
-}
 const Register = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValue>()
+  const { register, handleSubmit, formState: { errors } } = useForm<Auth>()
   const [isPassword, setIsPassword] = useState(true)
-  const onSubmit = (data: FormValue) => {
+  const onSubmit = (data: Auth) => {
     if (data.confirm !== data.password) {
       alert('Confirm password does not match with password')
       return
@@ -25,8 +19,8 @@ const Register = () => {
     const resultData = {
       username: data.username,
       password: data.password,
-      name: data.name,
-      email: data.email
+      name: data.name!,
+      email: data.email!
     }
     authRegister(resultData)
       .then(res => {

@@ -2,7 +2,7 @@ import { Avatar, Button, Code, Modal, ModalBody, ModalContent, ModalFooter, Moda
 import { useContext, useEffect, useState } from "react";
 import { StateContext } from "../../../context/stateContext";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { Modals } from "../../../interface/modal";
+import { Modals } from "../../../interface/index";
 
 const ModalFriend = ({ isOpen, onOpenChange, setModalName }: Modals) => {
   const { friend, setChatId, setCurrentUserChat } = useContext(StateContext)

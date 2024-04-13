@@ -4,7 +4,7 @@ import { StateContext } from "../../../context/stateContext";
 import { useForm } from "react-hook-form";
 import { updateUser } from "../../../api/userApi";
 import { GetToken } from "../../../utils/token";
-import { Modals } from "../../../interface/modal";
+import { Modals } from "../../../interface/index";
 
 interface FormValue {
   name: string,

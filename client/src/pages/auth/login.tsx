@@ -8,16 +8,13 @@ import { SaveToken } from "../../utils/token"
 import { StateContext } from "../../context/stateContext"
 import EyeSlashFilledIcon from "../../components/icon/eyeSlashFilledIcon"
 import EyeFilledIcon from "../../components/icon/eyeFilledIcon"
-interface FormValue {
-  username:string,
-  password:string
-}
+import { Auth } from "../../interface"
 const Login =() => {
-  const {register,handleSubmit} = useForm <FormValue>();
+  const {register,handleSubmit} = useForm <Auth>();
   const {setIsLogin} = useContext(StateContext)
   const navigate = useNavigate()
   const [isPassword,setIsPassword] = useState(true)
-  const onSubmit = (data:FormValue) => {
+  const onSubmit = (data:Auth) => {
     authLogin(data)
     .then(res => {
       if(res.status === 200){

@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
 import { Avatar, Button, Checkbox, CheckboxGroup, Code, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { Modals } from "../../../interface/modal";
+import { Modals } from "../../../interface/index";
 import { useForm } from "react-hook-form";
 import { GetToken } from "../../../utils/token";
 import { StateContext } from "../../../context/stateContext";
-import { GroupChat } from "../../../interface/chat";
+import { GroupChat } from "../../../interface";
 import { createGroupChat } from "../../../api/chatApi";
 interface FormCreate{
     name:string,
@@ -61,7 +61,6 @@ const ModalMessage = ({ isOpen, onOpenChange, setModalName }: Modals) => {
     const addListUser = (idUser:string) => {
         !listUser.includes(idUser) ? setListUser([...listUser,idUser]) : setListUser(listUser.filter((l:string) => l !== idUser))
     }
-    /* Post data :idChat, name, avatar, listUser,time,timestamp,message,token */
     return <Modal
         isOpen={isOpen}
         onOpenChange={() => { onOpenChange(); setModalName("") }}
