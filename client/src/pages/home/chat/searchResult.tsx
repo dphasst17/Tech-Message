@@ -8,8 +8,8 @@ interface SearchType {
 }
 const Result = ({ data, setSearchValue,setModalName,onOpen }:SearchType) => {
 
-    return <div className="w-full min-h-[100px] h-auto absolute flex flex-wrap justify-center border border-solid border-zinc-100 rounded-lg bg-zinc-800 top-12 z-40 p-1">
-        <Listbox>
+    return <div className="w-full min-h-[100px] mt-2 h-auto absolute flex flex-wrap justify-center border border-solid border-zinc-100 rounded-lg bg-zinc-800 top-12 z-40 p-1">
+        <Listbox className="w-full">
             {data?.slice(0, 5).map(u => <ListboxItem key={u.idUser}
                 classNames={{ title: ["text-[20px] font-bold truncate"] }}
                 className="!text-[25px] !fon-bold"

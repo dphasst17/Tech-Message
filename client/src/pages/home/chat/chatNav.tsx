@@ -56,21 +56,23 @@ const ChatNav = () => {
             <Button size="sm" radius="sm" color="danger" isIconOnly className="md:hidden" onClick={toggleNav}>
                 <FaRegWindowClose className="text-[22px]" />
             </Button>
-            <Input type="text"
-                value={searchValue}
-                onChange={(e) => { handleSearchChange(e) }}
-                radius="sm"
-                classNames={{
-                    inputWrapper: ["border-zinc-400 border border-solid"],
-                    input: ["text-white"]
-                }}
-                onKeyDown={(e: any) => { if (e.keyCode === 13 && searchValue !== "") { setModalName("search"), onOpen() } }}
-                className="h-[38px] my-2" placeholder="Search..."
-                endContent={
-                    <Button className="h-3/4" color="primary" radius="sm" isIconOnly onPress={onOpen} onClick={() => { searchValue !== "" && setModalName("search") }}><CiSearch className="font-bold text-[18px]" /></Button>
-                }
-            />
+            <div className="w-[98%] relative flex flex-col items-center ">
+                <Input type="text"
+                    value={searchValue}
+                    onChange={(e) => { handleSearchChange(e) }}
+                    radius="sm"
+                    classNames={{
+                        inputWrapper: ["border-zinc-400 border border-solid"],
+                        input: ["text-white"]
+                    }}
+                    onKeyDown={(e: any) => { if (e.keyCode === 13 && searchValue !== "") { setModalName("search"), onOpen() } }}
+                    className="h-[38px] my-2" placeholder="Search..."
+                    endContent={
+                        <Button className="h-3/4" color="primary" radius="sm" isIconOnly onPress={onOpen} onClick={() => { searchValue !== "" && setModalName("search") }}><CiSearch className="font-bold text-[18px]" /></Button>
+                    }
+                />
             {searchValue !== "" && <Result data={resultData} setSearchValue={setSearchValue} setModalName={setModalName} onOpen={onOpen} />}
+            </div>
             {user?.map((u: any) => <div className="user w-full h-[10%] flex justify-evenly items-center" key={u.idUser}>
                 <div className="w-1/5">
                     <Avatar radius="lg" className="w-4/5 !h-[60px]"
