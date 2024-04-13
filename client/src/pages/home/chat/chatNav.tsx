@@ -52,7 +52,7 @@ const ChatNav = () => {
     }, [searchValue])
 
     return <>
-        <nav className={`chatNav absolute md:relative w-full md:w-[55%] 2xl:w-1/4 h-svh flex flex-col content-start p-2 md:pt-1  bg-zinc-900 md:bg-transparent ${nav ? 'translate-x-[0%]' : 'translate-x-[-150%]'} md:translate-x-[0%] transition-all z-50 md:z-0`}>
+        <nav className={`chatNav absolute md:relative w-full md:w-[55%] 2xl:w-1/4 h-dvh flex flex-col content-start p-2 md:pt-1  bg-zinc-900 md:bg-transparent ${nav ? 'translate-x-[0%]' : 'translate-x-[-150%]'} md:translate-x-[0%] transition-all z-50 md:z-0`}>
             <Button size="sm" radius="sm" color="danger" isIconOnly className="md:hidden" onClick={toggleNav}>
                 <FaRegWindowClose className="text-[22px]" />
             </Button>
