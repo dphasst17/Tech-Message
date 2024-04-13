@@ -33,14 +33,14 @@ const Login =() => {
     })
   }
   return <>
-    <form className="w-1/4">
+    <form className="w-4/5 md:w-2/5 xl:w-1/4">
       <Input {...register('username', {required:true})} type="text" label="Username" radius="sm" color="default" variant="bordered" className="my-2" />
       <Input {...register('password', {required:true})} type={isPassword ? 'password':'text'} label="Password" 
         radius="sm" color="default" variant="bordered" className="my-2"
         onKeyDown={(e) => {if(e.key === "Enter"){handleSubmit(onSubmit)()}}} 
       />
     </form>
-    <div className="w-1/4 h-[50px] flex justify-end items-center">
+    <div className="w-4/5 md:w-2/5 xl:w-1/4 h-[50px] flex justify-start lg:justify-end items-center">
       <Button isIconOnly onClick={() => {setIsPassword(!isPassword)}} className="text-center cursor-pointer transition-all" radius="sm">
         {isPassword?<EyeFilledIcon className="text-[25px]"/>:<EyeSlashFilledIcon className="text-[25px]"/>}
       </Button>
