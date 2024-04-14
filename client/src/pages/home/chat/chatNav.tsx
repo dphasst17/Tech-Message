@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { Avatar, Button, Code, Input,useDisclosure } from "@nextui-org/react"
+import { Avatar, Badge, Button, Code, Input,useDisclosure } from "@nextui-org/react"
 import { StateContext } from "../../../context/stateContext"
 import { removeLocalStorage } from "../../../utils/localStorage"
 import { useNavigate } from "react-router-dom"
@@ -7,7 +7,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { searchUser } from "../../../api/userApi"
 import { CiSearch } from "react-icons/ci";
 import { CgUserList } from "react-icons/cg";
-import { FaRegWindowClose } from "react-icons/fa";
+import { FaRegWindowClose,FaRegEdit } from "react-icons/fa";
 import { TbMessages } from "react-icons/tb";
 import Result from "./searchResult"
 import ModalSearch from "../modal/search"
@@ -19,6 +19,7 @@ import ModalEdit from "../modal/edit"
 import { RemoveToken } from "../../../utils/token"
 import { io } from "socket.io-client"
 import ModalMessage from "../modal/message"
+import ModalEditAvatar from "../modal/avatar"
 const ChatNav = () => {
     const navigate = useNavigate();
     const { nav,user, isLogin, setIsLogin,toggleNav } = useContext(StateContext)
@@ -74,11 +75,17 @@ const ChatNav = () => {
             {searchValue !== "" && <Result data={resultData} setSearchValue={setSearchValue} setModalName={setModalName} onOpen={onOpen} />}
             </div>
             {user?.map((u: any) => <div className="user w-full h-[15%] lg:h-[10%] flex justify-evenly items-center" key={u.idUser}>
-                <div className="w-1/5">
-                    <Avatar radius="lg" className="w-4/5 !h-[60px]"
-                        src={u.avatar !== "" ? u.avatar
-                            : "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/07/gojo-vs-sukuna-jujutsu-kaisen.jpeg"}
-                    />
+                <div className="w-[15%]">
+                    <Badge placement="top-right" classNames={{badge:['w-[20px] rounded-md -ml-4 border-none']}} color="success" 
+                        content={
+                        <button onClick={() => {onOpen();setModalName("avatar")}} className="flex items-center justify-center !w-[30px] !h-[25px] rounded-none">
+                            <FaRegEdit className="w-full h-4/5 text-white" />
+                        </button>}>
+                        <Avatar radius="lg" className="w-[60px] !h-[60px] object-contain"
+                            src={u.avatar !== "" ? u.avatar
+                                : "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/07/gojo-vs-sukuna-jujutsu-kaisen.jpeg"}
+                        />
+                    </Badge>
                 </div>
                 <div className="info w-4/5 h-full flex flex-wrap justify-start content-around">
                     <Code className="w-[80%] max-h-[40px] h-2/5 text-[20px] flex items-center justify-center text-white" color="primary">{u.name}</Code>
@@ -95,6 +102,7 @@ const ChatNav = () => {
         {modalName === "friend" && <ModalFriend isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
         {modalName === "edit" && <ModalEdit isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
         {modalName === "message" && <ModalMessage isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
+        {modalName === "avatar" && <ModalEditAvatar isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
     </>
 }
 

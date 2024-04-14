@@ -7,7 +7,7 @@ export const getUser = async(token:string) => {
         }
     }).then(res => res.json())
 }
-export const updateUser = async(token:string,data:{name:string,email:string}) => {
+export const updateUser = async(token:string,data:{name?:string,email?:string,avatar?:string}) => {
     return fetch(`${import.meta.env.VITE_REACT_APP_URL}/user/update`,{
         method:'PATCH',
         headers:{

@@ -34,6 +34,7 @@ const ModalEdit = ({ isOpen, onOpenChange, setModalName }: Modals) => {
   return <Modal
     isOpen={isOpen}
     onOpenChange={() => { onOpenChange(); setModalName("") }}
+    placement="center"
   >
     <ModalContent>
       {(onClose) => (
