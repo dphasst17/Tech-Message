@@ -159,7 +159,7 @@ export default class Users {
     const idUser = reqCustom.idUser;
     const data = req.body;
     const update = {
-      $set: { name: data.name, email: data.email },
+      $set: data.hasOwnProperty('avatar') ?{ avatar:data.avatar } :{ name: data.name, email: data.email }
     };
     const options = { returnOriginal: false, includeResultMetadata: false };
     collectionInfo
