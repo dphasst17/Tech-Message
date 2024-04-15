@@ -6,7 +6,7 @@ import { socketMessage } from '../../../interface/socket';
 import { io } from 'socket.io-client';
 
 const MessageList = () => {
-    const { user, dataChat, friend, setChatId, setCurrentUserChat, setFriend, toggleNav } = useContext(StateContext)
+    const { user, dataChat,setDataChat, friend, setChatId, setCurrentUserChat, setFriend, toggleNav } = useContext(StateContext)
     const [listMess, setListMess] = useState<any[]>([])
     const [slice, setSlice] = useState(6);
     const [userOnline, setUserOnline] = useState<string[]>([])
@@ -16,7 +16,7 @@ const MessageList = () => {
     useEffect(() => {
         dataChat.length !== 0 ? (
             setListMess(dataChat),
-            setUserOnline(dataChat.filter((f: any) => f.userData.online === true).map((e: any) => e.userData.idUser))
+            setUserOnline(dataChat.filter((f: any) => f.userData?.online === true).map((e: any) => e.userData.idUser))
         ) : setListMess([])
     }, [dataChat])
     useEffect(() => {
@@ -69,12 +69,16 @@ const MessageList = () => {
                         time: data.detail.time
                     }
                 }
-                setListMess([newData,...listMess])
+                setDataChat([newData,...listMess])
 
             }
         })
+        socket.on('group/member', (data:{type:string,to:string,detail:any}) => {
+            if(data.to === user[0].idUser){
+                dataChat && (data.type === "add" ? setDataChat([data.detail,...dataChat]) : setDataChat(dataChat.filter((f:any) => f.idChat !== data.detail.idChat)))
+            }
+        })
         socket.on("/message", (data: socketMessage) => {
-            console.log(data)
             if (data) {
                 const splitData = data.idChat.split("-")
                 const getUser = [splitData[1], splitData[2]].filter((f: string) => f !== user[0].idUser)[0]
@@ -104,10 +108,9 @@ const MessageList = () => {
                     ...spliceObj
                 ]
                 getObj.length === 0 && getDataUser[0]?.online === true && setUserOnline([...userOnline, getDataUser[0]?.idUser])
-                console.log(getObj)
                 const result = getObj.length !== 0  ? appendData : addNewData
                 console.log(dataChat.includes(data.idChat))
-                dataChat.length !== 0 && ((splitData[1] === user[0].idUser || splitData[2] === user[0].idUser) || dataChat.map((d:any) => d.idChat).includes(data.idChat)) && setListMess(result)
+                dataChat.length !== 0 && ((splitData[1] === user[0].idUser || splitData[2] === user[0].idUser) || listMess.map((d:any) => d.idChat).includes(data.idChat)) && setListMess(result)
             }
         })
         // Dọn dẹp khi component unmount

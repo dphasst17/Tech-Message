@@ -52,7 +52,7 @@ const BadgeNav = () => {
     return <Popover placement="bottom-end" radius="sm" size="lg" className="w-[250px] sm:w-[300px]" showArrow={true}>
         <Badge content="" shape="rectangle" size="md" color={isNew ? "danger" : "primary"} placement="top-right" className="mx-auto">
             <PopoverTrigger>
-                <Button isIconOnly className="mx-1" onClick={() => { setIsNew(false) }}><IoPersonAddOutline className="text-[20px] font-bold" /></Button>
+                <Button size="sm" isIconOnly className="mx-1" onClick={() => { setIsNew(false) }}><IoPersonAddOutline className="text-[20px] font-bold" /></Button>
             </PopoverTrigger>
         </Badge>
         <PopoverContent>
