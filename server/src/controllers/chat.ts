@@ -7,7 +7,7 @@ import {
 import { Request, Response } from "express";
 import * as NewResponse from "../utils/response";
 import { Server } from "socket.io";
-import { socketCreateGroup, socketMessage } from "../utils/socket";
+import { socketChangeMember, socketCreateGroup, socketMessage } from "../utils/socket";
 import {
   chatInfo,
   ChatType,
@@ -95,17 +95,14 @@ export default class Chat {
       const getIdUser = getChat.map(
         (e) => e.listUser.filter((f: string) => f !== idUser)[0]
       );
-      const getGroupId = getChat.filter((e) => e.typeChat === "group")[0]
-        ?.idChat;
+      const getGroupId = getChat.filter((e) => e.typeChat === "group").map((g:any) => g.idChat);
 
       const getIdChat = getChat.map((e) => e.idChat);
       const infoUser = await collectionInfo
         .find({ idUser: { $in: getIdUser } })
         .project({ _id: 0, name: 1, avatar: 1, idUser: 1, online: 1 })
         .toArray();
-      const infoGroup =
-        getGroupId &&
-        (await collectionGroupInfo.find({ idGroup: getGroupId }).toArray());
+      const infoGroup = getGroupId ?(await collectionGroupInfo.find({ idGroup: {$in:getGroupId} }).toArray()) : [];
 
       const chatDetail = await collectionChat
         .aggregate([
@@ -268,6 +265,28 @@ export default class Chat {
       if (!updateData) {
         return NewResponse.responseMessage(res,401,"There was an error during execution, please try again later.");
       }
+      const getData = await collectionGroupInfo.find({idGroup:data.idChat}).toArray()
+      const dataResult = {
+        type:data.type,
+        to:data.idUser,
+        detail: data.type === "add" ? {
+          idChat:getData[0].idGroup,
+          type:"group",
+          userData:{
+            idUser:getData[0].idGroup,
+            name:getData[0].nameGroup,
+            avatar:getData[0].avatarGroup,
+            online:false
+          },
+          detail:{
+            sender:'',
+            message:'You have been added to the group',
+            timestamp:(new Date().toISOString()).split("T")[0],
+            time:new Date().toLocaleTimeString()
+          }
+        } : {idChat:getData[0].idGroup},
+      }
+      socketChangeMember(this.io,dataResult)
       NewResponse.responseMessage(res,200,`${data.type.charAt(0).toUpperCase() + data.type.slice(1)} member is success`)
     } catch {
       (err: any) =>

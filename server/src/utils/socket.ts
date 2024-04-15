@@ -10,3 +10,6 @@ export const socketNoti = (io:any,data:any) => {
 export const socketCreateGroup = (io:any,data:any) => {
     return io.emit('group/create',data)
 }
+export const socketChangeMember = (io:any,data:any) => {
+    return io.emit('group/member',data)
+}
