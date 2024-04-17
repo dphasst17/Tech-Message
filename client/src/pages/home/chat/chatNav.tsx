@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { Avatar, Badge, Button, Code, Input,useDisclosure } from "@nextui-org/react"
+import { Avatar, Badge, Button, Code, Input,Modal,useDisclosure } from "@nextui-org/react"
 import { StateContext } from "../../../context/stateContext"
 import { removeLocalStorage } from "../../../utils/localStorage"
 import { useNavigate } from "react-router-dom"
@@ -22,11 +22,32 @@ import ModalMessage from "../modal/message"
 import ModalEditAvatar from "../modal/avatar"
 const ChatNav = () => {
     const navigate = useNavigate();
-    const { nav,user, isLogin, setIsLogin,toggleNav } = useContext(StateContext)
+    const { nav,user, isLogin, searchValue, setIsLogin,setSearchValue,toggleNav } = useContext(StateContext)
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [modalName, setModalName] = useState("")
-    const [searchValue, setSearchValue] = useState("");
     const [resultData, setResultData] = useState([])
+    const modalData = [
+        {
+            name:'search',
+            modalDetail:ModalSearch
+        },
+        {
+            name:'friend',
+            modalDetail:ModalFriend
+        },
+        {
+            name:'edit',
+            modalDetail:ModalEdit
+        },
+        {
+            name:'avatar',
+            modalDetail:ModalEditAvatar
+        },
+        {
+            name:'message',
+            modalDetail:ModalMessage
+        }
+    ]
     const handleLogOut = () => {
         const socket = io(`${import.meta.env.VITE_REACT_APP_URL}`)
         removeLocalStorage('chatLog');
@@ -98,11 +119,15 @@ const ChatNav = () => {
             </div>)}
             <MessageList />
         </nav>
-        {modalName === "search" && <ModalSearch value={searchValue} isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName} />}
-        {modalName === "friend" && <ModalFriend isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
-        {modalName === "edit" && <ModalEdit isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
-        {modalName === "message" && <ModalMessage isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
-        {modalName === "avatar" && <ModalEditAvatar isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>}
+        <Modal
+            isOpen={isOpen}
+            onOpenChange={() => {onOpenChange();setModalName("")}}
+            size="lg"
+            backdrop="opaque"
+            placement="center"
+        >
+            {modalData.filter((f:any) => f.name === modalName).map((m:any) => <m.modalDetail isOpen={isOpen} onOpenChange={onOpenChange} setModalName={setModalName}/>)}
+        </Modal>
     </>
 }
 

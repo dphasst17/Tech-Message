@@ -9,7 +9,8 @@ export const StateProvider = ({children}:{children:React.ReactNode}) => {
     const [dataChat,setDataChat] = useState<any[]>([])
     const [isLogin,setIsLogin] = useState<boolean>(getLocalStorage('chatLog',false))
     const [noti,setNoti] = useState()
-    const [chatId,setChatId] = useState("")
+    const [chatId,setChatId] = useState("");
+    const [searchValue, setSearchValue] = useState("");
     const [currentUserChat,setCurrentUserChat] = useState<any>({idUser:"",name:"",avatar:""});
     const [nav,setNav] = useState<boolean>(true)
     const toggleNav = () => {
@@ -23,6 +24,7 @@ export const StateProvider = ({children}:{children:React.ReactNode}) => {
             isLogin,setIsLogin,
             noti,setNoti,
             chatId,setChatId,
+            searchValue, setSearchValue,
             currentUserChat,setCurrentUserChat,
             nav,setNav,
             toggleNav

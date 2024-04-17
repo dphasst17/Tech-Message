@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Avatar, Button, Checkbox, CheckboxGroup, Code, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Avatar, Button, Checkbox, CheckboxGroup, Code, Input, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { Modals } from "../../../interface/index";
 import { useForm } from "react-hook-form";
 import { GetToken } from "../../../utils/token";
@@ -53,7 +53,7 @@ const ModalMessage = ({ isOpen, onOpenChange, setModalName }: Modals) => {
                     },
                     ...dataChat
                 ])
-                onOpenChange(); setModalName("")
+                onOpenChange(isOpen); setModalName("")
             }
             alert(res.message)
         })
@@ -61,48 +61,42 @@ const ModalMessage = ({ isOpen, onOpenChange, setModalName }: Modals) => {
     const addListUser = (idUser:string) => {
         !listUser.includes(idUser) ? setListUser([...listUser,idUser]) : setListUser(listUser.filter((l:string) => l !== idUser))
     }
-    return <Modal
-        isOpen={isOpen}
-        onOpenChange={() => { onOpenChange(); setModalName("") }}
-        placement="center"
-    >
-        <ModalContent>
-            {(onClose) => (
-                <>
-                    <ModalHeader className="flex flex-col gap-1">Create group chat</ModalHeader>
-                    <ModalBody>
-                        <form className="w-full">
-                            <Input {...register('name',{required:true})} radius="sm" className="my-1" type="text" placeholder="Group name" />
-                            <Input {...register('avatar',{required:true})} radius="sm" className="my-1" type="text" placeholder="Group photo url"/>
-                        </form>
-                        <CheckboxGroup
-                            label="Select member"
-                            defaultValue={listUser}
-                        >
-                            {friend?.map((f:any) => <Checkbox onClick={() => {
-                                addListUser(f.idUser)
-                            }} 
-                            value={f.idUser} 
-                            key={f.idUser}
-                            classNames={{wrapper:["flex"]}}
-                            >
-                                <Code className="flex items-center w-auto min-w-[150px]">
-                                    <Avatar src={f.avatar} radius="sm" isBordered={f.online} color={f.online ? 'success' : 'default'} className="mr-2" /> 
-                                    {f.name}
-                                </Code>
-                            </Checkbox>)}
-                        </CheckboxGroup>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="danger" variant="light" onPress={() => { onClose(); setModalName("") }}>
-                            Close
-                        </Button>
-                        <Button color="success" onClick={() => {handleSubmit(onSubmit)()}}>Create</Button>
-                    </ModalFooter>
-                </>
-            )}
-        </ModalContent>
-    </Modal>
+    return <ModalContent>
+    {(onClose) => (
+        <>
+            <ModalHeader className="flex flex-col gap-1">Create group chat</ModalHeader>
+            <ModalBody>
+                <form className="w-full">
+                    <Input {...register('name',{required:true})} radius="sm" className="my-1" type="text" placeholder="Group name" />
+                    <Input {...register('avatar',{required:true})} radius="sm" className="my-1" type="text" placeholder="Group photo url"/>
+                </form>
+                <CheckboxGroup
+                    label="Select member"
+                    defaultValue={listUser}
+                >
+                    {friend?.map((f:any) => <Checkbox onClick={() => {
+                        addListUser(f.idUser)
+                    }} 
+                    value={f.idUser} 
+                    key={f.idUser}
+                    classNames={{wrapper:["flex"]}}
+                    >
+                        <Code className="flex items-center w-auto min-w-[150px]">
+                            <Avatar src={f.avatar} radius="sm" isBordered={f.online} color={f.online ? 'success' : 'default'} className="mr-2" /> 
+                            {f.name}
+                        </Code>
+                    </Checkbox>)}
+                </CheckboxGroup>
+            </ModalBody>
+            <ModalFooter>
+                <Button color="danger" variant="light" onPress={() => {setModalName("");onClose()}}>
+                    Close
+                </Button>
+                <Button color="success" onClick={() => {handleSubmit(onSubmit)()}}>Create</Button>
+            </ModalFooter>
+        </>
+    )}
+</ModalContent>
 
 }
 

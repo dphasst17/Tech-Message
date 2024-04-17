@@ -17,6 +17,7 @@ export interface Auth {
 }
 export interface Modals {
     isOpen: boolean,
-    onOpenChange: () => void
+    onClose?:() => void,
+    onOpenChange: (isOpen:boolean) => void,
     setModalName: React.Dispatch<React.SetStateAction<string>>,
 }

@@ -147,7 +147,9 @@ const ChatContent = () => {
                     {d.data.map((e: any) => <>
                         <MessageUi key={e.sender} className="w-auto h-auto overflow-hidden my-4 flex items-center"
                             color={e.sender === user[0].idUser ? 'primary' : 'danger'} isTruncate={true} reverse={e.sender === user[0].idUser ? true : false}
-                            src={e.sender === user[0].idUser ? user[0].avatar : (e.avatar || currentUserChat.avatar)} content={e.message} height="auto" width="auto" />
+                            src={e.sender === user[0].idUser ? user[0].avatar : (e.avatar || currentUserChat.avatar)} 
+                            content={e.message} height="auto" width="auto" time={e.time}
+                        />
                     </>)}
                 </>)}
                 <div ref={messagesEndRef} />
