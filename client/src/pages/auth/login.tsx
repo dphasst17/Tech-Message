@@ -31,9 +31,14 @@ const Login =() => {
   }
   return <>
     <form className="w-4/5 md:w-2/5 xl:w-1/4">
-      <Input {...register('username', {required:true})} type="text" label="Username" radius="sm" color="default" variant="bordered" className="my-2" />
+      <h1 className="text-zinc-400">account test 2 : username:  dfast - pass:  dfast17</h1>
+      <Input {...register('username', {required:true})} type="text" label="Username" radius="sm" color="default" 
+      variant="bordered" className="my-2" 
+      defaultValue="dfast17"
+      />
       <Input {...register('password', {required:true})} type={isPassword ? 'password':'text'} label="Password" 
         radius="sm" color="default" variant="bordered" className="my-2"
+        defaultValue="dfast17"
         onKeyDown={(e) => {if(e.key === "Enter"){handleSubmit(onSubmit)()}}} 
       />
     </form>
